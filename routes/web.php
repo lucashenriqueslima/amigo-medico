@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Dashboard;
+use App\Livewire\MyAppointments;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -9,13 +11,14 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
-Route::view('inicio', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
-Route::view('consultas', 'consultations')
-    ->middleware(['auth', 'verified'])
-    ->name('consultations');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('inicio', Dashboard::class)
+        ->name('dashboard');
+
+    Route::get('minhas-consultas', MyAppointments::class)
+        ->name('my-appointments');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

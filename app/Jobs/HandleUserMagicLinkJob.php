@@ -2,8 +2,12 @@
 
 namespace App\Jobs;
 
+use App\DTO\ConexaSaudeMagicLinkDTO;
+use App\Enums\ConexaSaudeMagicLinkType;
+use App\Models\ConexaSaudeMagicLink;
 use App\Models\User;
 use App\Services\ConexaSaude\ConexaSaudeApiService;
+use App\Services\ConexaSaudeMagicLinkService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -16,28 +20,31 @@ class HandleUserMagicLinkJob implements ShouldQueue
      */
     public function __construct(
         protected User $user,
-        protected string $magicLinkColumnName,
-        protected string $migicLinkType,
-    ) {
-        //
-    }
+        protected ConexaSaudeMagicLinkType $conexaSaudeMagicLinkType,
+    ) {}
 
     /**
      * Execute the job.
      */
-    public function handle(ConexaSaudeApiService $conexaSaudeApiService): void
-    {
+    public function handle(
+        ConexaSaudeApiService $conexaSaudeApiService,
+        ConexaSaudeMagicLinkService $conexaSaudeMagicLinkService
+    ): void {
         $response = $conexaSaudeApiService->getMagicLinkByPacientId(
             $this->user->conexa_saude_id,
-            $this->migicLinkType
+            $this->conexaSaudeMagicLinkType
         );
 
         if (empty($response)) {
             return;
         }
 
-        $this->user->update([
-            $this->magicLinkColumnName => $response['object']['linkMagicoWeb'],
-        ]);
+        $conexaSaudeMagicLinkService->updateOrCreateConexaSaudeMagicLink(
+            new ConexaSaudeMagicLinkDTO(
+                userId: $this->user->id,
+                type: $this->conexaSaudeMagicLinkType,
+                magicLink: $response['object']['linkMagicoWeb']
+            )
+        );
     }
 }

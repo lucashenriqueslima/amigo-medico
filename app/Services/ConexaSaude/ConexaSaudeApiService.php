@@ -2,6 +2,7 @@
 
 namespace App\Services\ConexaSaude;
 
+use App\Enums\ConexaSaudeMagicLinkType;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
@@ -47,12 +48,16 @@ class ConexaSaudeApiService
         }
     }
 
-    public function getMagicLinkByPacientId(string $pacientId, ?string $magicLinkType = null)
+    public function getMagicLinkByPacientId(string $pacientId, ConexaSaudeMagicLinkType $conexaSaudeMagicLinkType)
     {
+
+        if ($conexaSaudeMagicLinkType === ConexaSaudeMagicLinkType::Dashboard) {
+            $conexaSaudeMagicLinkType = null;
+        }
 
         $response = $this->httpClient->get("/patients/generate-magiclink-access-app/{$pacientId}", [
             'embed' => true,
-            'route' => $magicLinkType,
+            'route' => $conexaSaudeMagicLinkType?->value,
         ]);
 
         return $response->json();

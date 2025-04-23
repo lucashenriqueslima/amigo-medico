@@ -3,8 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\ConexaSaudeMagicLinkType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -64,5 +68,22 @@ class User extends Authenticatable
     public function association(): BelongsTo
     {
         return $this->belongsTo(Association::class);
+    }
+
+
+    public function dashboardMagicLink(): HasOne
+    {
+        return $this->hasOne(ConexaSaudeMagicLink::class)
+            ->where('type', ConexaSaudeMagicLinkType::Dashboard);
+    }
+
+    public function myAppointmentsMagicLink(): HasOne
+    {
+        return $this->hasOne(ConexaSaudeMagicLink::class)
+            ->where('type', ConexaSaudeMagicLinkType::MyAppointments);
+    }
+    public function magicLinks(): HasMany
+    {
+        return $this->hasMany(ConexaSaudeMagicLink::class);
     }
 }

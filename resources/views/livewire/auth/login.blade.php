@@ -39,7 +39,7 @@
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
         {{ __('Don\'t have an account?') }}
-        <flux:link :href="route('register')" wire:navigate>{{ __('Find out more') }}</flux:link>
+        <flux:link wire:navigate>{{ __('Find out more') }}</flux:link>
     </div>
 </div>
 <script>

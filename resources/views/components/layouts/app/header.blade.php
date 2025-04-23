@@ -18,7 +18,7 @@
             </flux:navbar>
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="rectangle-stack" :href="route('consultations')" :current="request()->routeIs('consultations')" wire:navigate>
+                <flux:navbar.item icon="rectangle-stack" :href="route('my-appointments')" :current="request()->routeIs('my-appointments')" wire:navigate>
                     {{ __('Consultations') }}
                 </flux:navbar.item>
             </flux:navbar>
@@ -83,7 +83,7 @@
                     <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Start') }}
                     </flux:navlist.item>
-                    <flux:navlist.item icon="rectangle-stack" :href="route('consultations')" :current="request()->routeIs('consultations')" wire:navigate>
+                    <flux:navlist.item icon="rectangle-stack" :href="route('my-appointments')" :current="request()->routeIs('my-appointments')" wire:navigate>
                     {{ __('Consultations') }}
                     </flux:navlist.item>
                     {{-- <flux:navlist.item icon="shield-check" :href="route('dashboard')" :current="request()->routeIs('')" wire:navigate>

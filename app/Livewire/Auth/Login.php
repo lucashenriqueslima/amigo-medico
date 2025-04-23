@@ -2,11 +2,16 @@
 
 namespace App\Livewire\Auth;
 
+use App\DTO\ConexaSaudeMagicLinkDTO;
+use App\Enums\ConexaSaudeMagicLinkType;
 use App\Helpers\StringHelper;
 use App\Jobs\HandleUserMagicLinkJob;
 use App\Models\Association;
+use App\Models\ConexaSaudeMagicLink;
 use App\Models\User;
 use App\Services\ConexaSaude\ConexaSaudeApiService;
+use App\Services\ConexaSaudeMagicLinkService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
@@ -32,8 +37,10 @@ class Login extends Component
     /**
      * Handle an incoming authentication request.
      */
-    public function login(ConexaSaudeApiService $conexaSaudeApiService): void
-    {
+    public function login(
+        ConexaSaudeApiService $conexaSaudeApiService,
+        ConexaSaudeMagicLinkService $conexaSaudeMagicLinkService
+    ): void {
         $this->validate();
 
         $this->ensureIsNotRateLimited();
@@ -50,7 +57,10 @@ class Login extends Component
             ]);
         }
 
-        $magicLink = $conexaSaudeApiService->getMagicLinkByPacientId($patient['id']);
+        $magicLink = $conexaSaudeApiService->getMagicLinkByPacientId(
+            $patient['id'],
+            ConexaSaudeMagicLinkType::Dashboard
+        );
 
         if ($this->email != $patient['mail']) {
             RateLimiter::hit($this->throttleKey());
@@ -64,15 +74,23 @@ class Login extends Component
             'cpf' => $patient['cpf']
         ], [
             'cpf' => $patient['cpf'],
-            'association_id' => Association::where('slug', $patient['enterprise'] ?? 'agsmb')->first()->id,
+            'association_id' => Association::where('slug', $patient['enterprise'] ?? 'agsmb')->first()?->id,
             'name' => $patient['name'],
             'email' => $patient['mail'],
             'conexa_saude_id' => $patient['id'],
-            'dashboard_magic_link' => $magicLink['object']['linkMagicoWeb'],
+
             'password' => bcrypt($patient['cpf']),
         ]);
 
-        Auth::loginUsingId($user->id, false);
+        $conexaSaudeMagicLinkService->updateOrCreateConexaSaudeMagicLink(
+            new ConexaSaudeMagicLinkDTO(
+                userId: $user->id,
+                type: ConexaSaudeMagicLinkType::Dashboard,
+                magicLink: $magicLink['object']['linkMagicoWeb'],
+            )
+        );
+
+        Auth::loginUsingId($user->id, $this->remember);
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
@@ -80,8 +98,7 @@ class Login extends Component
         dispatch(
             new HandleUserMagicLinkJob(
                 $user,
-                'my_consultations_magic_link',
-                'my-appointments'
+                ConexaSaudeMagicLinkType::MyAppointments,
             )
         );
 
