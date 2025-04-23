@@ -72,7 +72,7 @@ class Login extends Component
             'password' => bcrypt($patient['cpf']),
         ]);
 
-        Auth::loginUsingId($user->id, remember: $this->remember);
+        Auth::loginUsingId($user->id, false);
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
