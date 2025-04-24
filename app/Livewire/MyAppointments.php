@@ -19,8 +19,8 @@ class MyAppointments extends Component
 
 
         if (
-            Auth::user()->myAppointmentsMagicLink == null
-            || !Auth::user()->myAppointmentsMagicLink->isExpired()
+            Auth::user()->myAppointmentsMagicLink != null
+            && !Auth::user()->myAppointmentsMagicLink->isExpired()
         ) {
             return;
         }

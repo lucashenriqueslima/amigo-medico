@@ -6,6 +6,7 @@ use App\DTO\ConexaSaudeMagicLinkDTO;
 use App\Enums\ConexaSaudeMagicLinkType;
 use App\Services\ConexaSaude\ConexaSaudeApiService;
 use App\Services\ConexaSaudeMagicLinkService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
@@ -17,7 +18,6 @@ class Dashboard extends Component
         ConexaSaudeApiService $conexaSaudeApiService,
         ConexaSaudeMagicLinkService $conexaSaudeMagicLinkService
     ): void {
-
 
         if (!Auth::user()->dashboardMagicLink->isExpired()) {
             return;

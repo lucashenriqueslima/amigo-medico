@@ -20,7 +20,7 @@ class ConexaSaudeMagicLinkDTO
             'user_id' => $this->userId,
             'type' => $this->type,
             'magic_link' => $this->magicLink,
-            'expires_at' => Carbon::now()->addMinutes(5),
+            'expires_at' => Carbon::now()->addMinutes(5)->toDateTimeString(),
         ];
     }
 }
