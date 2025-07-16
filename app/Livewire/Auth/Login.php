@@ -74,11 +74,10 @@ class Login extends Component
             'cpf' => $patient['cpf']
         ], [
             'cpf' => $patient['cpf'],
-            'association_id' => Association::where('slug', $patient['enterprise'] ?? 'agsmb')->first()?->id,
+            'association_id' => Association::where('slug', $patient['enterprise'])->first()?->id,
             'name' => $patient['name'],
             'email' => $patient['mail'],
             'conexa_saude_id' => $patient['id'],
-
             'password' => bcrypt($patient['cpf']),
         ]);
 

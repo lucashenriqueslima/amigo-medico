@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['dashboard_magic_link', 'my_consultations_magic_link']);
+            $table->foreignId('association_id')->nullable()->change();
         });
     }
 
@@ -22,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('dashboard_magic_link')->nullable();
-            $table->string('my_consultations_magic_link')->nullable();
+            $table->foreignId('association_id')->nullable(false)->change();
         });
     }
 };
